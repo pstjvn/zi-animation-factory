@@ -1,0 +1,57 @@
+<link rel="import" href="../polymer/polymer-element.html">
+<link rel="import" href="./double-buffered-list.html">
+
+<dom-module id="zi-animation-factory">
+  <template>
+    <style>:host { display: none; }</style>
+  </template>
+  <script>
+  (function() {
+
+    var tasks = new DoubleBufferedList();
+    var hasSchedulerActive = false;
+
+    function runTasks() {
+      var ts = Date.now();
+      hasSchedulerActive = false;
+      tasks.forEach(function(task) {
+        task.scheduled = false;
+        task.state.timestamp = ts;
+      });
+      tasks.forEach(function(task) {
+        if (task.measure !== null) task.measure(task.state);
+      });
+      tasks.forEach(function(task) {
+        if (task.mutate !== null) task.mutate(task.state);
+      });
+      tasks.clear();
+    }
+
+    function sheduleTaskIteration() {
+      if (!hasSchedulerActive) {
+        hasSchedulerActive = true;
+        window.requestAnimationFrame(runTasks);
+      };
+    }
+
+    Polymer({
+      is: 'zi-animation-factory',
+      create: function(measure, mutate, state) {
+        var task = {
+          sheduled: false,
+          measure: measure || null,
+          mutate: mutate || null,
+          state: state || {timestamp: 0}
+        };
+        return function() {
+          if (!task.sheduled) {
+            task.sheduled = true;
+            tasks.add(task);
+            sheduleTaskIteration();
+          }
+        };
+      }
+    });
+  })();
+  </script>
+</dom-module>
