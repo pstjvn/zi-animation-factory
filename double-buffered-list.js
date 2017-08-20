@@ -34,7 +34,7 @@ DoubleBufferedList.prototype.alter = function() {
 };
 
 DoubleBufferedList.prototype.forEach = function(fn, ctx) {
-  var list = this.list_;
+  var list = this.list;
   this.alter();
   list.forEach(fn, ctx);
   this.alter();
