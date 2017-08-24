@@ -83,14 +83,14 @@
       is: 'zi-animation-factory',
       create: function(measure, mutate, state) {
         var task = {
-          sheduled: false,
+          scheduled: false,
           measure: measure || null,
           mutate: mutate || null,
           state: state || {timestamp: 0}
         };
         return function() {
-          if (!task.sheduled) {
-            task.sheduled = true;
+          if (!task.scheduled) {
+            task.scheduled = true;
             tasks.add(task);
             sheduleTaskIteration();
           }
